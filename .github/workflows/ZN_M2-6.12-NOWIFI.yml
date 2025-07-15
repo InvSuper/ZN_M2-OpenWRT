@@ -2,7 +2,7 @@ name: ZN_M2-6.12-NOWIFI
 
 on:
   workflow_dispatch:
-  schedule:
+  # schedule:
   #   - cron: 0 12 * * *
 
 env:
