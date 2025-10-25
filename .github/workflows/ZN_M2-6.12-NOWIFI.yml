@@ -2,8 +2,8 @@ name: ZN_M2-6.12-NOWIFI
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   - cron: 0 12 * * *
+  schedule:
+    - cron: 0 12 * * 5
 
 env:
   REPO_URL: https://github.com/LiBwrt/openwrt-6.x.git
