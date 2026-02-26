@@ -105,9 +105,12 @@ jobs:
         chmod +x $DIY_SCRIPT
         chmod +x $GITHUB_WORKSPACE/scripts/*.sh
         cd $OPENWRT_PATH
-        # echo "运行自定义脚本"
+        echo "运行自定义脚本"
         $GITHUB_WORKSPACE/$DIY_SCRIPT
-        # echo "自定义脚本运行完毕"
+        # 修复 mbedtls GCC14 内联编译错误
+        echo "修复 mbedtls GCC14 内联编译错误"
+        $GITHUB_WORKSPACE/scripts/fix_mbedtls.sh
+        echo "自定义脚本运行完毕"
 
     - name: Download DL Package(下载DL软件包)
       run: |
