@@ -10,7 +10,7 @@
 #
 # 修复策略（双管齐下）：
 #   A. 通过 CMAKE_OPTIONS 传入 -Wno-error，阻止警告升级为错误
-#   B. 同时追加 -U_FORTIFY_SOURCE 放在所有参数最后，确保覆盖顺序
+#   B. TARGET_CFLAGS 末尾追加 -U_FORTIFY_SOURCE，覆盖工具链注入
 #
 # 执行阶段：feeds install 之后、make 编译之前
 # ============================================================
@@ -19,7 +19,6 @@ set -e
 
 OPENWRT_DIR="${OPENWRT_DIR:-$(pwd)}"
 MBEDTLS_MK="${OPENWRT_DIR}/package/libs/mbedtls/Makefile"
-MARKER="# FIX-GCC14"
 
 # ---------- 检查目录 ----------
 if [ ! -f "${MBEDTLS_MK}" ]; then
@@ -44,38 +43,38 @@ echo "[INFO] 已备份至: ${MBEDTLS_MK}.bak"
 echo "[DEBUG] Makefile 中 include 行如下："
 grep -n "^include" "${MBEDTLS_MK}" || echo "  (未找到 include 行)"
 
-# ---------- 核心修复内容 ----------
-# CMAKE_OPTIONS: 通过 -Wno-error 阻止警告变错误（针对 -Werror）
-# TARGET_CFLAGS: 末尾追加 -U_FORTIFY_SOURCE，确保在工具链注入的
-#                -D_FORTIFY_SOURCE=1 之后生效（覆盖顺序靠后才有效）
-FIX_CONTENT="${MARKER}: fix memset always_inline error with GCC14 + musl fortify
-CMAKE_OPTIONS += -DCMAKE_C_FLAGS_INIT=\"-Wno-error\"
-TARGET_CFLAGS += -Wno-error -U_FORTIFY_SOURCE"
-
-# 优先插入到 cmake.mk include 行之前
-if grep -q "include \$(INCLUDE_DIR)/cmake\.mk" "${MBEDTLS_MK}"; then
-    sed -i "/include \$(INCLUDE_DIR)\/cmake\.mk/i ${FIX_CONTENT}\n" "${MBEDTLS_MK}"
-    echo "[INFO] 已插入到 cmake.mk include 行之前。"
-elif grep -q "include \$(INCLUDE_DIR)/package\.mk" "${MBEDTLS_MK}"; then
-    sed -i "/include \$(INCLUDE_DIR)\/package\.mk/i ${FIX_CONTENT}\n" "${MBEDTLS_MK}"
-    echo "[INFO] 已插入到 package.mk include 行之前。"
-else
-    # 兜底：追加到末尾
-    printf "\n%s\n" "${FIX_CONTENT}" >> "${MBEDTLS_MK}"
-    echo "[INFO] 已追加到 Makefile 末尾（兜底）。"
-fi
+# ---------- 使用 awk 在 cmake.mk 行之前插入修复内容 ----------
+# awk 不受引号和特殊字符影响，比 sed 更安全
+awk '
+/include \$\(INCLUDE_DIR\)\/cmake\.mk/ {
+    print "# FIX-GCC14: fix memset always_inline error with GCC14 + musl fortify"
+    print "CMAKE_OPTIONS += -DCMAKE_C_FLAGS_INIT=\"-Wno-error\""
+    print "TARGET_CFLAGS += -Wno-error -U_FORTIFY_SOURCE"
+    print ""
+}
+{ print }
+' "${MBEDTLS_MK}.bak" > "${MBEDTLS_MK}"
 
 # ---------- 验证 ----------
-if grep -q "Wno-error" "${MBEDTLS_MK}"; then
-    echo "[OK] 修复写入成功，内容如下："
+if grep -q "FIX-GCC14" "${MBEDTLS_MK}"; then
+    echo "[OK] 修复写入成功，插入内容如下："
     echo "---"
     grep -A3 "FIX-GCC14" "${MBEDTLS_MK}"
     echo "---"
 else
-    echo "[ERROR] 写入失败！请手动在 ${MBEDTLS_MK} 中添加以下内容："
-    echo "  CMAKE_OPTIONS += -DCMAKE_C_FLAGS_INIT=\"-Wno-error\""
-    echo "  TARGET_CFLAGS += -Wno-error -U_FORTIFY_SOURCE"
-    exit 1
+    echo "[ERROR] awk 插入失败，尝试直接追加到文件末尾..."
+    cat >> "${MBEDTLS_MK}" << 'EOF'
+
+# FIX-GCC14: fix memset always_inline error with GCC14 + musl fortify
+CMAKE_OPTIONS += -DCMAKE_C_FLAGS_INIT="-Wno-error"
+TARGET_CFLAGS += -Wno-error -U_FORTIFY_SOURCE
+EOF
+    if grep -q "FIX-GCC14" "${MBEDTLS_MK}"; then
+        echo "[OK] 已追加到文件末尾。"
+    else
+        echo "[ERROR] 所有写入方式均失败，请手动修改 ${MBEDTLS_MK}"
+        exit 1
+    fi
 fi
 
 echo ""
