@@ -19,6 +19,12 @@ sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_gener
 # rm -rf feeds/luci/applications/luci-app-netdata
 # rm -rf feeds/luci/applications/luci-app-serverchan
 
+# --------------------------
+# 【核心】执行 mbedtls 修复脚本，解决 memset 内联报错
+# --------------------------
+chmod +x $GITHUB_WORKSPACE/scripts/fix_mbedtls.sh
+$GITHUB_WORKSPACE/scripts/fix_mbedtls.sh
+
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
   branch="$1" repourl="$2" && shift 2
