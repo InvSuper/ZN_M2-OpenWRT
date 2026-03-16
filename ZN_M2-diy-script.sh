@@ -13,7 +13,6 @@ src-git packages https://github.com/immortalwrt/packages.git
 src-git luci https://github.com/immortalwrt/luci.git
 src-git nss_packages https://github.com/LiBwrt/nss-packages.git
 EOF
-# 👆 【修复】单独一行，只写 EOF，后面不加任何注释/空格！
 
 # --------------------------
 # 3. 更新并安装 Feeds
