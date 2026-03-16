@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 修改默认IP（保留你原文件的配置：192.168.0.1）
+# 修改默认IP
 sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
 # 更改默认 Shell 为 zsh
@@ -9,13 +9,13 @@ sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_gener
 # TTYD 免登录
 # sed -i 's|/bin/login|/bin/login -f root|g' feeds/packages/utils/ttyd/files/ttyd.config
 
-# 移除要替换的包（仅保留smartdns/wechatpush相关移除，避免冲突）
+# 移除要替换的包
 rm -rf feeds/packages/net/smartdns
 rm -rf feeds/luci/applications/luci-app-serverchan
 # 新增bandix旧包清理（避免冲突）
 rm -rf feeds/luci/applications/luci-app-bandix
 
-# Git稀疏克隆，只克隆指定目录到本地（保留你原文件的函数，无修改）
+# Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
   branch="$1" repourl="$2" && shift 2
   git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
@@ -25,7 +25,7 @@ function git_sparse_clone() {
   cd .. && rm -rf $repodir
 }
 
-# ===================== 新增你要求的6个插件（核心修改，bandix已修正） =====================
+# ===================== 新增6个插件 ===================== 
 # 1. SmartDNS
 git clone --depth=1 -b lede https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
 git clone --depth=1 https://github.com/pymumu/openwrt-smartdns package/smartdns
@@ -39,13 +39,12 @@ git clone --depth=1 https://github.com/immortalwrt/luci-app-tailscale package/lu
 # 4. Turbo ACC 网络加速
 git clone --depth=1 https://github.com/chenmozhijin/turboacc package/turboacc
 
-# 5. Bandix 流量监控（包名修正为bandix）
+# 5. Bandix 流量监控
 git clone --depth=1 https://github.com/brvphoenix/luci-app-bandix package/luci-app-bandix
 
-# 6. WeChatPush 微信推送（替换原serverchan）
+# 6. WeChatPush 微信推送
 git clone --depth=1 -b openwrt-18.06 https://github.com/tty228/luci-app-wechatpush package/luci-app-wechatpush
 
-# 以下为你原文件保留的注释/默认配置（无修改）
 # 添加额外插件
 # git_sparse_clone master https://github.com/sundaqiang/openwrt-packages luci-app-wolplus
 # git_sparse_clone main https://github.com/nikkinikki-org/OpenWrt-nikki nikki
@@ -59,9 +58,9 @@ git clone --depth=1 -b openwrt-18.06 https://github.com/tty228/luci-app-wechatpu
 # # make package
 # make package/luci-app-nikki/compile
 
-# 科学上网插件（注释保留，无内容）
+# 科学上网插件
 
-# Themes（注释保留，无内容）
+# Themes
 
 # 修改本地时间格式
 # sed -i 's/os.date()/os.date("%a %Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/*/index.htm
@@ -71,6 +70,6 @@ git clone --depth=1 -b openwrt-18.06 https://github.com/tty228/luci-app-wechatpu
 # orig_version=$(cat "package/lean/default-settings/files/zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')
 # sed -i "s/${orig_version}/R${date_version} by Haiibo/g" package/lean/default-settings/files/zzz-default-settings
 
-# 原文件收尾逻辑（保留）
+# 原文件收尾逻辑
 ./scripts/feeds update -a
 ./scripts/feeds install -a
