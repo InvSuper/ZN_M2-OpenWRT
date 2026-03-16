@@ -4,7 +4,7 @@
 sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
 # ==========================================
-# 【核心】添加 LiBwrt 官方 Feeds 源（你截图里的 4 个有效地址）
+# 【核心】添加 LiBwrt 官方 Feeds 源
 # ==========================================
 echo "src-git packages https://github.com/immortalwrt/packages.git" >> feeds.conf.default
 echo "src-git luci https://github.com/immortalwrt/luci.git" >> feeds.conf.default
