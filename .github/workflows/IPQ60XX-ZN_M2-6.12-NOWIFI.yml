@@ -163,11 +163,13 @@ jobs:
         artifacts: ${{ env.FIRMWARE_PATH }}/*
         body: |
           **This is OpenWrt Firmware for ${{ env.FIRMWARE_TAG }}**
-          - 🔥 机型：ZN_M2 (IPQ60XX)
-          - 🧱 内核：6.12 NSS 有线加速
-          - 🚫 状态：纯有线、已彻底禁用 WIFI
-          - 🌐 默认地址：192.168.0.1
-          - 🔑 默认密码：password
+          ### 📒 固件信息(无WIFI)
+          - 无WIFI带有线NSS的6.12内核固件
+          - 💻 这是 ${{ env.FIRMWARE_TAG }} 平台使用的 OpenWrt 固件
+          - ⚽ 固件源码: ${{ env.REPO_URL }}
+          - 💝 源码分支: ${{ env.REPO_BRANCH }}
+          - 🌐 默认地址: 192.168.0.1
+          - 🔑 默认密码: password
           ### 🧩 预装插件列表
           1. SmartDNS（智能DNS解析）
           2. AdGuard Home（广告过滤/本地DNS）
