@@ -3,6 +3,13 @@
 # 修改默认IP
 sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
+# 适配兆能M2 1G内存（替换设备树内存参数）
+sed -i 's/reg = <0x40000000 0x20000000>/reg = <0x40000000 0x40000000>/g' target/linux/qualcommax/dts/ipq6018/ipq6018-8devices-mango-dvk.dts
+
+# 修正设备标识为兆能M2原厂名，避免sysupgrade校验失败
+sed -i 's/8devices,mango-dvk/zn,m2/g' target/linux/qualcommax/dts/ipq6018/ipq6018-8devices-mango-dvk.dts
+sed -i 's/8devices,mango/zn,m2/g' target/linux/qualcommax/image/ipq60xx.mk
+
 # 更改默认 Shell 为 zsh
 # sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
 
