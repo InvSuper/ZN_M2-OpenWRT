@@ -4,14 +4,91 @@
 sed -i 's/192.168.100.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
 # 适配兆能M2 1G内存（替换设备树内存参数）
-sed -i 's/reg = <0x40000000 0x20000000>/reg = <0x40000000 0x40000000>/g' \
-  target/linux/qualcommax/dts/ipq6018/ipq6018-8devices-mango-dvk.dts
+# 首先查找正确的设备树文件
+DTS_FILE=$(find target/linux/qualcommax/dts -name "*zn*" -o -name "*m2*" -o -name "*mango*" | head -1)
+if [ -z "$DTS_FILE" ]; then
+  # 如果没找到，使用默认路径
+  DTS_FILE="target/linux/qualcommax/dts/ipq6018/ipq6018-8devices-mango-dvk.dts"
+fi
 
-# 修正设备标识为兆能M2原厂名，避免sysupgrade校验失败
-sed -i 's/8devices,mango-dvk/zn,m2/g' \
-  target/linux/qualcommax/dts/ipq6018/ipq6018-8devices-mango-dvk.dts
-sed -i 's/8devices,mango/zn,m2/g' \
-  target/linux/qualcommax/image/ipq60xx.mk
+# 检查文件是否存在
+if [ -f "$DTS_FILE" ]; then
+  echo "找到设备树文件: $DTS_FILE"
+  # 修改内存配置
+  sed -i 's/reg = <0x40000000 0x20000000>/reg = <0x40000000 0x40000000>/g' "$DTS_FILE"
+  # 修正设备标识为兆能M2原厂名，避免sysupgrade校验失败
+  sed -i 's/8devices,mango-dvk/zn,m2/g' "$DTS_FILE"
+  sed -i 's/8devices,mango/zn,m2/g' "$DTS_FILE"
+else
+  echo "警告: 未找到设备树文件，尝试创建ZN-M2专用设备树"
+  # 创建ZN-M2专用设备树文件
+  mkdir -p target/linux/qualcommax/dts/ipq6018
+  cat > target/linux/qualcommax/dts/ipq6018/ipq6018-zn-m2.dts << 'EOF'
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include "ipq6018.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+  model = "ZN M2";
+  compatible = "zn,m2", "qcom,ipq6018";
+
+  memory {
+    reg = <0x40000000 0x40000000>; // 1GB内存
+  };
+
+  aliases {
+    serial0 = &blsp1_uart3;
+  };
+
+  chosen {
+    stdout-path = "serial0:115200n8";
+  };
+};
+
+&blsp1_uart3 {
+  status = "okay";
+};
+
+&qpic_bam {
+  status = "okay";
+};
+
+&cryptobam {
+  status = "okay";
+};
+
+&blsp1_i2c3 {
+  status = "okay";
+};
+EOF
+  
+  # 更新ipq60xx.mk文件，添加ZN-M2设备
+  if [ -f "target/linux/qualcommax/image/ipq60xx.mk" ]; then
+    # 检查是否已经添加了ZN-M2设备
+    if ! grep -q "zn,m2" target/linux/qualcommax/image/ipq60xx.mk; then
+      # 在文件末尾添加ZN-M2设备配置
+      cat >> target/linux/qualcommax/image/ipq60xx.mk << 'EOF'
+
+# ZN M2
+define Device/zn_m2
+  $(call Device/FitImage)
+  $(call Device/UbiFit)
+  DEVICE_VENDOR := ZN
+  DEVICE_MODEL := M2
+  DEVICE_DTS := ipq6018-zn-m2
+  DEVICE_PACKAGES := kmod-ath11k-ahb ath11k-firmware-ipq6018
+endef
+TARGET_DEVICES += zn_m2
+EOF
+    fi
+  fi
+fi
+
+# 修正设备标识在ipq60xx.mk文件中
+sed -i 's/8devices,mango/zn,m2/g' target/linux/qualcommax/image/ipq60xx.mk
   
 # 更改默认 Shell 为 zsh
 # sed -i 's/\/bin\/ash/\/usr\/bin\/zsh/g' package/base-files/files/etc/passwd
