@@ -136,11 +136,11 @@ jobs:
     - name: Organize Files(整理文件)
       if: steps.compile.outputs.status == 'success'
       run: |
-        cd $OPENWRT_PATH/bin/targets/*/*
-        cat sha256sums
-        cp $OPENWRT_PATH/.config build.config
-        rm -rf feeds.buildinfo version.buildinfo
-        echo "FIRMWARE_PATH=$PWD" >> $GITH_ENV
+       cd $OPENWRT_PATH/bin/targets/*/*
+       cat sha256sums
+       cp $OPENWRT_PATH/.config build.config
+       rm -rf feeds.buildinfo version.buildinfo
+       echo "FIRMWARE_PATH=$(pwd)" >> $GITHUB_ENV
 
     - name: Upload Firmware To Artifact(将固件上传到Artifact)
       if: steps.compile.outputs.status == 'success' && env.FIRMWARE_RELEASE != 'true'
