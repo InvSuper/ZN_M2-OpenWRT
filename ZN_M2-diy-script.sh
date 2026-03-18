@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# 设置工作目录
+OPENWRT_DIR=$(pwd)
+
 # 修改默认IP
-sed -i 's/192.168.1.1/192.168.0.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.0.1/g' "$OPENWRT_DIR"/package/base-files/files/bin/config_generate
 
 # 适配兆能M2 1G内存（替换设备树内存参数）
 DTS_FILE=$(find "$OPENWRT_DIR"/target/linux/qualcommax/dts -name "*zn*m2*" -o -name "*m2*" | grep -i zn | head -1)
