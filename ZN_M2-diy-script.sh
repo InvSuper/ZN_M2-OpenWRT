@@ -5,11 +5,11 @@ sed -i 's/192.168.1.1/192.168.0.1/g' package/base-files/files/bin/config_generat
 
 # 适配兆能M2 1G内存（替换设备树内存参数）
 # 查找zn_m2设备树文件
-DTS_FILE=$(find target/linux/qualcommax/dts -name "*zn*m2*" -o -name "*m2*" | grep -i zn | head -1)  # 查找ZN M2设备树文件
+DTS_FILE=$(find openwrt/target/linux/qualcommax/dts -name "*zn*m2*" -o -name "*m2*" | grep -i zn | head -1)  # 查找ZN M2设备树文件
 
 # 如果没找到zn_m2，尝试找mango设备树
 if [ -z "$DTS_FILE" ]; then
-  DTS_FILE=$(find target/linux/qualcommax/dts -name "*mango*" | head -1)  # 找不到ZN M2时尝试找Mango设备树
+  DTS_FILE=$(find openwrt/target/linux/qualcommax/dts -name "*mango*" | head -1)  # 找不到ZN M2时尝试找Mango设备树
 fi
 
 # 检查文件是否存在
@@ -41,17 +41,29 @@ fi
 # --------------------------
 # 【核心】执行 mbedtls 修复脚本，解决 memset 内联报错
 # --------------------------
-chmod +x $GITHUB_WORKSPACE/scripts/fix_mbedtls.sh  # 给修复脚本添加执行权限
-$GITHUB_WORKSPACE/scripts/fix_mbedtls.sh  # 执行mbedtls修复脚本
+if [ -f "$GITHUB_WORKSPACE/scripts/fix_mbedtls.sh" ]; then
+  chmod +x $GITHUB_WORKSPACE/scripts/fix_mbedtls.sh  # 给修复脚本添加执行权限
+  $GITHUB_WORKSPACE/scripts/fix_mbedtls.sh  # 执行mbedtls修复脚本
+else
+  echo "警告: 未找到fix_mbedtls.sh脚本"
+fi
 
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {  # 定义稀疏克隆函数
   branch="$1" repourl="$2" && shift 2  # 提取分支和仓库URL参数
   git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl  # 稀疏克隆仓库
   repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')  # 提取仓库目录名
-  cd $repodir && git sparse-checkout set $@  # 进入目录并设置稀疏检出
-  mv -f $@ ../package  # 将指定目录移动到package目录
-  cd .. && rm -rf $repodir  # 清理临时目录
+  if [ -d "$repodir" ]; then
+    cd $repodir && git sparse-checkout set $@  # 进入目录并设置稀疏检出
+    if [ -d "$1" ]; then
+      mv -f $@ ../package  # 将指定目录移动到package目录
+    else
+      echo "警告: 目录 $@ 不存在"
+    fi
+    cd .. && rm -rf $repodir  # 清理临时目录
+  else
+    echo "警告: 克隆失败，目录 $repodir 不存在"
+  fi
 }
 
 # 添加额外插件
@@ -69,17 +81,33 @@ function git_sparse_clone() {  # 定义稀疏克隆函数
 
 # Tailscale 异地组网
 git clone --depth=1 https://github.com/immortalwrt/packages.git tmp-packages  # 克隆immortalwrt包仓库
-cp -r tmp-packages/net/tailscale package/  # 复制tailscale包到本地
-cp -r tmp-packages/luci/applications/luci-app-tailscale package/  # 复制tailscale LuCI界面到本地
+if [ -d "tmp-packages/net/tailscale" ]; then
+  cp -r tmp-packages/net/tailscale package/  # 复制tailscale包到本地
+else
+  echo "警告: tailscale目录不存在"
+fi
+if [ -d "tmp-packages/luci/applications/luci-app-tailscale" ]; then
+  cp -r tmp-packages/luci/applications/luci-app-tailscale package/  # 复制tailscale LuCI界面到本地
+else
+  echo "警告: luci-app-tailscale目录不存在"
+fi
 rm -rf tmp-packages  # 清理临时目录
 
 # Turbo ACC 网络加速
-git_sparse_clone main https://github.com/immortalwrt/immortalwrt package/turboacc  # 稀疏克隆Turbo ACC包
+git_sparse_clone openwrt-23.05 https://github.com/immortalwrt/immortalwrt package/turboacc  # 稀疏克隆Turbo ACC包
 
 # Bandix 流量监控
 git clone --depth=1 https://github.com/liuran001/openwrt-packages package/openwrt-packages  # 克隆liuran001的包仓库
-cp -r package/openwrt-packages/bandix package/  # 复制bandix包到本地
-cp -r package/openwrt-packages/luci-app-bandix package/  # 复制bandix LuCI界面到本地
+if [ -d "package/openwrt-packages/bandix" ]; then
+  cp -r package/openwrt-packages/bandix package/  # 复制bandix包到本地
+else
+  echo "警告: bandix目录不存在"
+fi
+if [ -d "package/openwrt-packages/luci-app-bandwidthd" ]; then
+  cp -r package/openwrt-packages/luci-app-bandwidthd package/  # 复制bandwidthd LuCI界面到本地
+else
+  echo "警告: luci-app-bandwidthd目录不存在"
+fi
 rm -rf package/openwrt-packages  # 清理临时目录
 
 
@@ -126,5 +154,11 @@ cat > package/base-files/files/etc/opkg/customfeeds.conf << 'EOF'  # 创建custo
 # src/gz example_feed_name http://www.example.com/path/to/files
 EOF
 
-./scripts/feeds update -a  # 更新所有feeds
-./scripts/feeds install -a  # 安装所有feeds
+# 更新和安装feeds
+if [ -f "openwrt/scripts/feeds" ]; then
+  cd openwrt && ./scripts/feeds update -a  # 更新所有feeds
+  ./scripts/feeds install -a  # 安装所有feeds
+  cd ..
+else
+  echo "警告: 未找到scripts/feeds脚本"
+fi
