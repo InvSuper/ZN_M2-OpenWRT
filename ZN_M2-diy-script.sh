@@ -36,16 +36,22 @@ fi
 rm -rf tmp-immortalwrt
 
 # 快速添加Bandix
-git clone --depth=1 --filter=blob:none https://github.com/liuran001/openwrt-packages tmp-bandix
-if [ -d "tmp-bandix/bandix" ]; then
-  cp -r tmp-bandix/bandix package/
-fi
-if [ -d "tmp-bandix/luci-app-bandix" ]; then
-  cp -r tmp-bandix/luci-app-bandix package/
-elif [ -d "tmp-bandix/luci-app-bandwidthd" ]; then
-  cp -r tmp-bandix/luci-app-bandwidthd package/
+# 拉取Bandix主程序
+git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix tmp-bandix
+if [ -d "tmp-bandix/openwrt-bandix" ]; then
+  cp -r tmp-bandix/openwrt-bandix package/bandix
+elif [ -d "tmp-bandix" ]; then
+  # 处理直接在根目录的情况
+  cp -r tmp-bandix package/bandix
 fi
 rm -rf tmp-bandix
+
+# 拉取Bandix Luci界面
+git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix tmp-bandix-luci
+if [ -d "tmp-bandix-luci" ]; then
+  cp -r tmp-bandix-luci package/luci-app-bandix
+fi
+rm -rf tmp-bandix-luci
 
 # 创建OPKG配置文件
 mkdir -p package/base-files/files/etc/opkg
