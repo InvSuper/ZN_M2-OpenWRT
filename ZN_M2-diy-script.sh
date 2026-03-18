@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 修改默认IP
-sed -i 's/192.168.*.1/192.168.0.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
 # 适配兆能M2 1G内存（替换设备树内存参数）
 # 查找zn_m2设备树文件
