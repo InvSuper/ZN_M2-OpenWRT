@@ -66,9 +66,4 @@ src/gz openwrt_small_flash https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a
 src/gz openwrt_video https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/video
 EOF
 
-# 创建customfeeds.conf文件
-cat > package/base-files/files/etc/opkg/customfeeds.conf << 'EOF'
-# add your custom package feeds here
-#
-# src/gz example_feed_name http://www.example.com/path/to/files
-EOF
+
