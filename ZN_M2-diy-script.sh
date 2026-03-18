@@ -20,51 +20,24 @@ fi
 
 # 快速添加Tailscale
 # 拉取Tailscale主程序
-git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale tmp-tailscale
-if [ -d "tmp-tailscale" ]; then
-  cp -r tmp-tailscale "$OPENWRT_DIR"/package/tailscale
-fi
-rm -rf tmp-tailscale
+git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
 
 # 拉取Tailscale Luci界面
-git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale tmp-tailscale-luci
-if [ -d "tmp-tailscale-luci" ]; then
-  cp -r tmp-tailscale-luci "$OPENWRT_DIR"/package/luci-app-tailscale
-fi
-rm -rf tmp-tailscale-luci
+git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
 
 # 快速添加Bandix
 # 拉取Bandix主程序
-git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix tmp-bandix
-if [ -d "tmp-bandix/openwrt-bandix" ]; then
-  cp -r tmp-bandix/openwrt-bandix "$OPENWRT_DIR"/package/bandix
-elif [ -d "tmp-bandix" ]; then
-  # 处理直接在根目录的情况
-  cp -r tmp-bandix "$OPENWRT_DIR"/package/bandix
-fi
-rm -rf tmp-bandix
+git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix "$OPENWRT_DIR"/package/bandix
 
 # 拉取Bandix Luci界面
-git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix tmp-bandix-luci
-if [ -d "tmp-bandix-luci" ]; then
-  cp -r tmp-bandix-luci "$OPENWRT_DIR"/package/luci-app-bandix
-fi
-rm -rf tmp-bandix-luci
+git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
 
 # 快速添加AdGuard Home
 # 拉取AdGuard Home Luci界面
-git clone --depth=1 --filter=blob:none https://github.com/kongfl888/luci-app-adguardhome tmp-adguard-luci
-if [ -d "tmp-adguard-luci" ]; then
-  cp -r tmp-adguard-luci "$OPENWRT_DIR"/package/luci-app-adguardhome
-fi
-rm -rf tmp-adguard-luci
+git clone --depth=1 --filter=blob:none https://github.com/kongfl888/luci-app-adguardhome "$OPENWRT_DIR"/package/luci-app-adguardhome
 
 # 拉取AdGuard Home主程序
-git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome tmp-adguard
-if [ -d "tmp-adguard" ]; then
-  cp -r tmp-adguard "$OPENWRT_DIR"/package/adguardhome
-fi
-rm -rf tmp-adguard
+git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
 # 创建OPKG配置文件
 mkdir -p "$OPENWRT_DIR"/package/base-files/files/etc/opkg
