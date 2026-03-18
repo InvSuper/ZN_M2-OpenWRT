@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# 设置工作目录
-OPENWRT_DIR=$(pwd)
-
 # 修改默认IP
 sed -i 's/192.168.1.1/192.168.0.1/g' package/base-files/files/bin/config_generate
 
@@ -35,10 +32,6 @@ if [ -d "tmp-tailscale-luci" ]; then
   cp -r tmp-tailscale-luci "$OPENWRT_DIR"/package/luci-app-tailscale
 fi
 rm -rf tmp-tailscale-luci
-
-# 快速添加Turbo ACC
-# 使用chenmozhijin/turboacc仓库
-curl -sSL https://raw.githubusercontent.com/chenmozhijin/turboacc/luci/add_turboacc.sh -o add_turboacc.sh && chmod +x add_turboacc.sh && ./add_turboacc.sh && rm -f add_turboacc.sh
 
 # 快速添加Bandix
 # 拉取Bandix主程序
