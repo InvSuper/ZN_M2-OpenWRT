@@ -67,6 +67,21 @@ function git_sparse_clone() {
 # # make package
 # make package/luci-app-nikki/compile
 
+# Tailscale 异地组网
+git clone --depth=1 https://github.com/immortalwrt/packages.git tmp-packages
+cp -r tmp-packages/net/tailscale package/
+cp -r tmp-packages/luci/applications/luci-app-tailscale package/
+rm -rf tmp-packages
+
+# Turbo ACC 网络加速
+git_sparse_clone main https://github.com/immortalwrt/immortalwrt package/turboacc
+
+# Bandix 流量监控
+git clone --depth=1 https://github.com/liuran001/openwrt-packages package/openwrt-packages
+cp -r package/openwrt-packages/bandix package/
+cp -r package/openwrt-packages/luci-app-bandix package/
+rm -rf package/openwrt-packages
+
 
 # 科学上网插件
 
@@ -84,6 +99,32 @@ function git_sparse_clone() {
 # date_version=$(date +"%y.%m.%d")
 # orig_version=$(cat "package/lean/default-settings/files/zzz-default-settings" | grep DISTRIB_REVISION= | awk -F "'" '{print $2}')
 # sed -i "s/${orig_version}/R${date_version} by Haiibo/g" package/lean/default-settings/files/zzz-default-settings
+
+# 创建OPKG配置文件
+mkdir -p package/base-files/files/etc/opkg
+
+cat > package/base-files/files/etc/opkg/opkg.conf << 'EOF'
+dest root /
+dest ram /tmp
+lists_dir ext /var/opkg-lists
+option overlay_root /overlay
+option check_signature 0
+
+# 主要软件源 - 使用25.12版本软件源
+src/gz openwrt_core https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/base
+src/gz openwrt_routing https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/routing
+src/gz openwrt_packages https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/packages
+src/gz openwrt_luci https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/luci
+src/gz openwrt_small_flash https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/small_flash
+src/gz openwrt_video https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/video
+EOF
+
+# 创建customfeeds.conf文件
+cat > package/base-files/files/etc/opkg/customfeeds.conf << 'EOF'
+# add your custom package feeds here
+#
+# src/gz example_feed_name http://www.example.com/path/to/files
+EOF
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
