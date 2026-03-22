@@ -26,14 +26,14 @@ fi
 git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
 
 # 拉取Tailscale Luci界面
-git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
+#git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
 
 # 快速添加Bandix
 # 拉取Bandix主程序
-git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix "$OPENWRT_DIR"/package/bandix
+#git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix "$OPENWRT_DIR"/package/bandix
 
 # 拉取Bandix Luci界面
-git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
+#git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
 
 # 快速添加AdGuard Home
 # 拉取AdGuard Home Luci界面 (使用 rufengsuixing 版本，版本格式更兼容)
