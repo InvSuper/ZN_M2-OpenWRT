@@ -42,6 +42,9 @@ git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app
 # 拉取AdGuard Home主程序
 git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
+# 拉取OAF
+git clone https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter    
+
 # 创建OPKG配置文件
 mkdir -p "$OPENWRT_DIR"/package/base-files/files/etc/opkg
 
