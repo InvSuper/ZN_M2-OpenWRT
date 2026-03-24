@@ -43,7 +43,13 @@ git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app
 git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
 # 拉取OAF
-git clone https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter    
+git clone https://github.com/destan19/OpenAppFilter.git package/OpenAppFilter
+# 开启OAF编译选项
+echo "CONFIG_PACKAGE_luci-app-oaf=y" >> .config
+echo "CONFIG_PACKAGE_appfilter=y" >> .config
+echo "CONFIG_PACKAGE_kmod-oaf=y" >> .config
+echo "CONFIG_PACKAGE_luci-i18n-oaf-zh-cn=y" >> .config
+make defconfig
 
 # 创建OPKG配置文件
 mkdir -p "$OPENWRT_DIR"/package/base-files/files/etc/opkg
