@@ -42,6 +42,16 @@ git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app
 # 拉取AdGuard Home主程序
 git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
+# ========== 新增：适配OpenAppFilter（OAF），解决6.x内核编译报错 ==========
+# 1. 删除feeds里自带的、不兼容6.x内核的老版本open-app-filter
+rm -rf "$OPENWRT_DIR"/feeds/packages/net/open-app-filter
+# 2. 拉取destan19官方适配版OAF源码（兼容LiBwrt 25.12 6.x内核）
+git clone --depth=1 --filter=blob:none https://github.com/destan19/OpenAppFilter.git "$OPENWRT_DIR"/package/OpenAppFilter
+# 3. 刷新feeds，让编译系统识别新版OAF插件
+./scripts/feeds update -a
+./scripts/feeds install -a
+# ========== OAF适配结束 ==========
+
 
 # 创建OPKG配置文件
 mkdir -p "$OPENWRT_DIR"/package/base-files/files/etc/opkg
