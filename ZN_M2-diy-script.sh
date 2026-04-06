@@ -21,26 +21,23 @@ if [ -f "$GITHUB_WORKSPACE/scripts/fix_mbedtls.sh" ]; then
   "$GITHUB_WORKSPACE/scripts/fix_mbedtls.sh"
 fi
 
-# 快速添加Tailscale
+# 拉取Tailscale
 # 拉取Tailscale主程序
-git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
-
+# git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
 # 拉取Tailscale Luci界面
-#git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
+# git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
 
-# 快速添加Bandix
+# 拉取Bandix
 # 拉取Bandix主程序
-#git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix "$OPENWRT_DIR"/package/bandix
-
+# git clone --depth=1 --filter=blob:none https://github.com/timsaya/openwrt-bandix "$OPENWRT_DIR"/package/bandix
 # 拉取Bandix Luci界面
-#git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
+# git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
 
-# 快速添加AdGuard Home
+# 拉取AdGuard Home
 # 拉取AdGuard Home Luci界面 (使用 rufengsuixing 版本，版本格式更兼容)
-git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app-adguardhome "$OPENWRT_DIR"/package/luci-app-adguardhome
-
+# git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app-adguardhome "$OPENWRT_DIR"/package/luci-app-adguardhome
 # 拉取AdGuard Home主程序
-git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
+# git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
 # ========== 新增：适配OpenAppFilter（OAF），解决6.x内核编译报错 ==========
 # 1. 删除feeds里自带的、不兼容6.x内核的老版本open-app-filter
@@ -62,14 +59,5 @@ dest ram /tmp
 lists_dir ext /var/opkg-lists
 option overlay_root /overlay
 option check_signature 0
-
-# 主要软件源 - 使用25.12版本软件源
-src/gz openwrt_core https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/base
-src/gz openwrt_routing https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/routing
-src/gz openwrt_packages https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/packages
-src/gz openwrt_luci https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/luci
-src/gz openwrt_small_flash https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/small_flash
-src/gz openwrt_video https://dl.openwrt.ai/packages-25.12/aarch64_cortex-a53/video
-EOF
 
 
