@@ -23,9 +23,9 @@ fi
 
 # 拉取Tailscale
 # 拉取Tailscale主程序
-# git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
+git clone --depth=1 --filter=blob:none https://github.com/GuNanOvO/openwrt-tailscale "$OPENWRT_DIR"/package/tailscale
 # 拉取Tailscale Luci界面
-# git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
+git clone --depth=1 --filter=blob:none https://github.com/asvow/luci-app-tailscale "$OPENWRT_DIR"/package/luci-app-tailscale
 
 # 拉取Bandix
 # 拉取Bandix主程序
@@ -34,8 +34,8 @@ fi
 # git clone --depth=1 --filter=blob:none https://github.com/timsaya/luci-app-bandix "$OPENWRT_DIR"/package/luci-app-bandix
 
 # 拉取AdGuard Home
-# 拉取AdGuard Home Luci界面 (使用 rufengsuixing 版本，版本格式更兼容)
-# git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app-adguardhome "$OPENWRT_DIR"/package/luci-app-adguardhome
+# 拉取AdGuard Home Luci界面
+git clone --depth=1 --filter=blob:none https://github.com/rufengsuixing/luci-app-adguardhome "$OPENWRT_DIR"/package/luci-app-adguardhome
 # 拉取AdGuard Home主程序
 # git clone --depth=1 --filter=blob:none https://github.com/AdguardTeam/AdGuardHome "$OPENWRT_DIR"/package/adguardhome
 
